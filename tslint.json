@@ -29,6 +29,7 @@
         "no-any": false,
         "no-magic-numbers": false,
         "no-require-imports": false,
+        "no-unbound-method": false,
         "file-name-casing": [
             true,
             "kebab-case"

@@ -1,10 +1,12 @@
 export interface IBufferEntry {
     options: any;
-    lastRequestDate: Date;
+    lastRequestDate: Date | string;
     data: any;
 }
-export interface IPersistencyService {
-    delete(options?: any): Promise<void>;
-    read(options?: any): Promise<IBufferEntry[]>;
-    saveBufferEntry(bufferEntry: IBufferEntry): Promise<void>;
+export interface IBufferService {
+    addToBuffer(bufferEntry: IBufferEntry): Promise<void>;
+    getBufferedResult(options: any): Promise<IBufferEntry | undefined> | IBufferEntry | undefined;
+    deleteBufferEntry(options: any): Promise<void>;
+    deleteBuffer(): Promise<void> | void;
+    getCompleteBufferContent(): Promise<IBufferEntry[]> | IBufferEntry[];
 }

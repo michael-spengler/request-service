@@ -5,7 +5,7 @@ import { IBufferEntry, IBufferService } from "./types"
 
 export class RequestService {
 
-    private static instance: RequestService
+    private static instance: RequestService | undefined
 
     public static getInstance(bufferServices: IBufferService[]): RequestService {
         if (RequestService.instance === undefined) {
@@ -16,7 +16,7 @@ export class RequestService {
     }
 
     // private constructor to ensure singleton concept
-    private constructor(private bufferServices: IBufferService[]) {
+    private constructor(private readonly bufferServices: IBufferService[]) {
     }
 
     public async get(options: any, bufferIntervalInMilliseconds: number): Promise<IBufferEntry> {

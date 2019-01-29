@@ -7,8 +7,8 @@ class StandardBufferService {
     async addToBuffer(bufferEntry) {
         this.bufferedResults.push(bufferEntry);
     }
-    async getBufferedResult(options) {
-        const bufferedEntriesForOptions = this.bufferedResults.filter((bufferEntry) => bufferEntry.options.toString() === options.toString());
+    getBufferedResult(options) {
+        const bufferedEntriesForOptions = this.bufferedResults.filter((bufferEntry) => bufferEntry.options === options);
         if (bufferedEntriesForOptions.length === 1) {
             return bufferedEntriesForOptions[0];
         }
@@ -25,9 +25,6 @@ class StandardBufferService {
         }
         else {
             this.bufferedResults.splice(indexOfEntryWhichShallBeDeleted, 1);
-        }
-        if (!(persistencyService === undefined)) {
-            await persistencyService.delete(options);
         }
     }
     getCompleteBufferContent() {

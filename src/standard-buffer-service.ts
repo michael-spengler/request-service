@@ -8,7 +8,7 @@ export class StandardBufferService implements IBufferService {
         this.bufferedResults.push(bufferEntry)
     }
 
-    public getBufferedResult(options: any): IBufferEntry | undefined {
+    public getBufferedResult(options: any): Promise<IBufferEntry | undefined> | IBufferEntry | undefined {
 
         const bufferedEntriesForOptions: IBufferEntry[] =
             this.bufferedResults.filter((bufferEntry: IBufferEntry) =>
@@ -21,7 +21,7 @@ export class StandardBufferService implements IBufferService {
         return undefined
     }
 
-    public deleteBuffer(): void {
+    public deleteBuffer(): Promise<void> | void {
         this.bufferedResults = []
     }
 
