@@ -54,6 +54,31 @@ describe("RequestService", () => {
 
     })
 
+    it("performs two subsequent requests - delivering buffered data from buffer", async () => {
+        const requestService: RequestService = RequestService.getInstance([standardBufferService])
+
+        const firstCallsResult: IBufferEntry = await requestService.get(optionsISS, bufferIntervalInMilliSeconds)
+        expect(firstCallsResult.data)
+            .toEqual({ someContent: "hello world" })
+
+        expect(standardBufferService.addToBuffer)
+            .toHaveBeenCalledTimes(1)
+
+        expect(firstCallsResult.options)
+            .toEqual(optionsISS)
+
+        const secondCallsResult: IBufferEntry = await requestService.get(optionsISS, bufferIntervalInMilliSeconds)
+        expect(firstCallsResult.data)
+            .toEqual(secondCallsResult.data)
+
+        expect(firstCallsResult.options)
+            .toEqual(secondCallsResult.options)
+
+        expect(firstCallsResult.lastRequestDate)
+            .toEqual(secondCallsResult.lastRequestDate)
+
+    })
+
     // it("performs two subsequent requests - delivering buffered data from buffer", async () => {
     //     const requestService: RequestService = RequestService.getInstance([fSBasedBufferService])
 
@@ -102,31 +127,6 @@ describe("RequestService", () => {
 
     //     expect(firstCallsResult === secondCallsResult)
     //         .toBeFalsy()
-
-    // })
-
-    // it("performs two subsequent requests - delivering buffered data from buffer", async () => {
-    //     const requestService: RequestService = RequestService.getInstance([standardBufferService])
-
-    //     const firstCallsResult: IBufferEntry = await requestService.get(optionsISS, bufferIntervalInMilliSeconds)
-    //     expect(firstCallsResult.data)
-    //         .toEqual({ someContent: "hello world" })
-
-    //     expect(standardBufferService.addToBuffer)
-    //         .toHaveBeenCalledTimes(1)
-
-    //     expect(firstCallsResult.options)
-    //         .toEqual(optionsISS)
-
-    //     const secondCallsResult: IBufferEntry = await requestService.get(optionsISS, bufferIntervalInMilliSeconds)
-    //     expect(firstCallsResult.data)
-    //         .toEqual(secondCallsResult.data)
-
-    //     expect(firstCallsResult.options)
-    //         .toEqual(secondCallsResult.options)
-
-    //     expect(firstCallsResult.lastRequestDate)
-    //         .toEqual(secondCallsResult.lastRequestDate)
 
     // })
 
