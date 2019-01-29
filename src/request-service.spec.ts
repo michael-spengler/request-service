@@ -1,7 +1,7 @@
 import { FSBasedBufferService } from "./fs-based-buffer-service"
 import { RequestService } from "./request-service"
 import { StandardBufferService } from "./standard-buffer-service"
-import { IBufferEntry } from "./types"
+import { IBufferEntry, IBufferService } from "./types"
 
 jest.mock("request")
 
@@ -10,48 +10,77 @@ describe("RequestService", () => {
     const request: any = require("request-promise")
     const optionsISS: any = { url: "http://api.open-notify.org/iss-now.json" }
     const bufferIntervalInMilliSeconds: number = 60 * 60 * 1000 // hourly
-    const bufferService: StandardBufferService = new StandardBufferService()
-    // const bufferService: FSBasedBufferService = new FSBasedBufferService()
+    const standardBufferService: StandardBufferService = new StandardBufferService()
+    // const fSBasedBufferService: FSBasedBufferService = new FSBasedBufferService()
 
     beforeEach(async () => {
         jest.clearAllMocks()
-        jest.spyOn(bufferService, "deleteBufferEntry")
-        jest.spyOn(bufferService, "addToBuffer")
+        jest.spyOn(standardBufferService, "deleteBufferEntry")
+        jest.spyOn(standardBufferService, "addToBuffer")
+
+        // jest.spyOn(fSBasedBufferService, "deleteBufferEntry")
+        // jest.spyOn(fSBasedBufferService, "addToBuffer")
 
         const mockGet: any = request.get
         mockGet.mockImplementation(() => ({ someContent: "hello world" }))
-        await bufferService.deleteBuffer()
+        await standardBufferService.deleteBuffer()
+        //        await fSBasedBufferService.deleteBuffer()
     })
 
-    it("performs two subsequent requests - delivering buffered data from buffer", async () => {
+    it("performs two subsequent requests - replacing outdated data in buffer", async () => {
         const requestService: RequestService =
-            RequestService.getInstance([bufferService])
+            RequestService.getInstance([standardBufferService])
 
-        const firstCallsResult: IBufferEntry = await requestService.get(optionsISS, bufferIntervalInMilliSeconds)
+        const firstCallsResult: IBufferEntry =
+            await requestService.get(optionsISS, bufferIntervalInMilliSeconds)
+
         expect(firstCallsResult.data)
             .toEqual({ someContent: "hello world" })
-
-        expect(bufferService.addToBuffer)
-            .toHaveBeenCalledTimes(1)
 
         expect(firstCallsResult.options)
             .toEqual(optionsISS)
 
-        const secondCallsResult: IBufferEntry = await requestService.get(optionsISS, bufferIntervalInMilliSeconds)
-        expect(firstCallsResult.data)
-            .toEqual(secondCallsResult.data)
+        const aShortMomentInTime: number = 0.0001
 
-        expect(firstCallsResult.options)
-            .toEqual(secondCallsResult.options)
+        const secondCallsResult: IBufferEntry =
+            await requestService.get(optionsISS, aShortMomentInTime)
 
-        expect(firstCallsResult.lastRequestDate)
-            .toEqual(secondCallsResult.lastRequestDate)
+        expect(standardBufferService.deleteBufferEntry)
+            .toHaveBeenCalledTimes(1)
+
+        expect(firstCallsResult === secondCallsResult)
+            .toBeFalsy()
 
     })
 
+    // it("performs two subsequent requests - delivering buffered data from buffer", async () => {
+    //     const requestService: RequestService = RequestService.getInstance([fSBasedBufferService])
+
+    //     const firstCallsResult: IBufferEntry = await requestService.get(optionsISS, bufferIntervalInMilliSeconds)
+    //     expect(firstCallsResult.data)
+    //         .toEqual({ someContent: "hello world" })
+
+    //     expect(fSBasedBufferService.addToBuffer)
+    //         .toHaveBeenCalledTimes(1)
+
+    //     expect(firstCallsResult.options)
+    //         .toEqual(optionsISS)
+
+    //     const secondCallsResult: IBufferEntry = await requestService.get(optionsISS, bufferIntervalInMilliSeconds)
+    //     expect(firstCallsResult.data)
+    //         .toEqual(secondCallsResult.data)
+
+    //     expect(firstCallsResult.options)
+    //         .toEqual(secondCallsResult.options)
+
+    //     expect(firstCallsResult.lastRequestDate)
+    //         .toEqual(secondCallsResult.lastRequestDate)
+
+    // })
+
     // it("performs two subsequent requests - replacing outdated data in buffer", async () => {
     //     const requestService: RequestService =
-    //         RequestService.getInstance([bufferService])
+    //         RequestService.getInstance([fSBasedBufferService])
 
     //     const firstCallsResult: IBufferEntry =
     //         await requestService.get(optionsISS, bufferIntervalInMilliSeconds)
@@ -67,11 +96,37 @@ describe("RequestService", () => {
     //     const secondCallsResult: IBufferEntry =
     //         await requestService.get(optionsISS, aShortMomentInTime)
 
-    //     expect(bufferService.deleteBufferEntry)
+    //     expect(fSBasedBufferService.deleteBufferEntry)
     //         .toHaveBeenCalledTimes(1)
 
     //     expect(firstCallsResult === secondCallsResult)
     //         .toBeFalsy()
 
     // })
+
+    // it("performs two subsequent requests - delivering buffered data from buffer", async () => {
+    //     const requestService: RequestService = RequestService.getInstance([standardBufferService])
+
+    //     const firstCallsResult: IBufferEntry = await requestService.get(optionsISS, bufferIntervalInMilliSeconds)
+    //     expect(firstCallsResult.data)
+    //         .toEqual({ someContent: "hello world" })
+
+    //     expect(standardBufferService.addToBuffer)
+    //         .toHaveBeenCalledTimes(1)
+
+    //     expect(firstCallsResult.options)
+    //         .toEqual(optionsISS)
+
+    //     const secondCallsResult: IBufferEntry = await requestService.get(optionsISS, bufferIntervalInMilliSeconds)
+    //     expect(firstCallsResult.data)
+    //         .toEqual(secondCallsResult.data)
+
+    //     expect(firstCallsResult.options)
+    //         .toEqual(secondCallsResult.options)
+
+    //     expect(firstCallsResult.lastRequestDate)
+    //         .toEqual(secondCallsResult.lastRequestDate)
+
+    // })
+
 })
