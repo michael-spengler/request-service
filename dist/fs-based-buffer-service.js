@@ -21,7 +21,8 @@ class FSBasedBufferService {
     }
     async deleteBufferEntry(options) {
         const bufferedResults = await this.read();
-        const indexOfEntryWhichShallBeDeleted = bufferedResults.indexOf(bufferedResults.filter((entry) => entry.options === options)[0], 1);
+        const entryToBeDeleted = bufferedResults.filter((entry) => JSON.stringify(entry.options) === JSON.stringify(options))[0];
+        const indexOfEntryWhichShallBeDeleted = bufferedResults.indexOf(entryToBeDeleted);
         if (indexOfEntryWhichShallBeDeleted === -1) {
             throw new Error("You tried to delete a buffer entry which was not in the buffer.");
         }
@@ -46,7 +47,7 @@ class FSBasedBufferService {
         }
         requestedBufferEntries = (options === undefined) ?
             allBufferEntries :
-            allBufferEntries.filter((entry) => entry.options.toString() === options.toString());
+            allBufferEntries.filter((entry) => JSON.stringify(entry.options) === JSON.stringify(options));
         return requestedBufferEntries;
     }
 }
