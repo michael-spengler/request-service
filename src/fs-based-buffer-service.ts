@@ -31,8 +31,10 @@ export class FSBasedBufferService implements IBufferService {
 
         const bufferedResults: IBufferEntry[] = await this.read()
 
-        const indexOfEntryWhichShallBeDeleted: number =
-            bufferedResults.indexOf(bufferedResults.filter((entry: IBufferEntry) => entry.options === options)[0], 1)
+        const entryToBeDeleted: IBufferEntry = bufferedResults.filter((entry: IBufferEntry) =>
+            JSON.stringify(entry.options) === JSON.stringify(options))[0]
+
+        const indexOfEntryWhichShallBeDeleted: number = bufferedResults.indexOf(entryToBeDeleted)
 
         if (indexOfEntryWhichShallBeDeleted === -1) {
             throw new Error("You tried to delete a buffer entry which was not in the buffer.")
@@ -62,7 +64,7 @@ export class FSBasedBufferService implements IBufferService {
         }
         requestedBufferEntries = (options === undefined) ?
             allBufferEntries :
-            allBufferEntries.filter((entry: IBufferEntry) => entry.options.toString() === options.toString())
+            allBufferEntries.filter((entry: IBufferEntry) => JSON.stringify(entry.options) === JSON.stringify(options))
 
         return requestedBufferEntries
     }

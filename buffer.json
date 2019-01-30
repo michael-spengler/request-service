@@ -1,1 +1,1 @@
-[{"data":{"someContent":"hello world"},"lastRequestDate":"2019-01-29T21:41:33.792Z","options":{"url":"http://api.open-notify.org/iss-now.json"}}]
+[{"options":{"url":"http://api.open-notify.org/iss-now.json"},"data":{},"lastRequestDate":"2019-01-30T08:25:57.499Z"},{"options":{"url":"http://api.open-notify.org/astros.json"},"data":{},"lastRequestDate":"2019-01-30T08:25:57.500Z"}]
