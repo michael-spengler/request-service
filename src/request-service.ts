@@ -7,16 +7,16 @@ export class RequestService {
 
     private static instance: RequestService | undefined
 
-    public static getInstance(bufferServices: IBufferService[]): RequestService {
+    public static getInstance(bufferService: IBufferService): RequestService {
         if (RequestService.instance === undefined) {
-            RequestService.instance = new RequestService(bufferServices)
+            RequestService.instance = new RequestService(bufferService)
         }
 
         return RequestService.instance
     }
 
     // private constructor to ensure singleton concept
-    private constructor(private readonly bufferServices: IBufferService[]) {
+    private constructor(private readonly bufferService: IBufferService) {
     }
 
     public async get(options: any, bufferIntervalInMilliseconds: number): Promise<IBufferEntry> {
@@ -31,21 +31,19 @@ export class RequestService {
     private async getValidResultFromBuffer(options: any, bufferIntervalInMilliseconds: number):
         Promise<IBufferEntry | undefined> {
         let validBufferedResult: IBufferEntry | undefined
-        for (const bufferService of this.bufferServices) {
-            const bufferedResult: IBufferEntry | undefined =
-                await bufferService.getBufferedResult(options)
+        const bufferedResult: IBufferEntry | undefined =
+            await this.bufferService.getBufferedResult(options)
 
-            if (!(bufferedResult === undefined)) {
-                const lastRequestDate: Date = (typeof (bufferedResult.lastRequestDate) === "string") ?
-                    new Date(bufferedResult.lastRequestDate) :
-                    bufferedResult.lastRequestDate
+        if (!(bufferedResult === undefined)) {
+            const lastRequestDate: Date = (typeof (bufferedResult.lastRequestDate) === "string") ?
+                new Date(bufferedResult.lastRequestDate) :
+                bufferedResult.lastRequestDate
 
-                if (IntervalChecker.isWithinInterval(bufferIntervalInMilliseconds, lastRequestDate)) {
-                    validBufferedResult = bufferedResult
-                    validBufferedResult.lastRequestDate = lastRequestDate
-                } else {
-                    await bufferService.deleteBufferEntry(options)
-                }
+            if (IntervalChecker.isWithinInterval(bufferIntervalInMilliseconds, lastRequestDate)) {
+                validBufferedResult = bufferedResult
+                validBufferedResult.lastRequestDate = lastRequestDate
+            } else {
+                await this.bufferService.deleteBufferEntry(options)
             }
         }
 
@@ -61,9 +59,7 @@ export class RequestService {
             options,
         }
 
-        this.bufferServices.forEach(async (bufferService: IBufferService) => {
-            await bufferService.addToBuffer(result)
-        })
+        await this.bufferService.addToBuffer(result)
 
         return result
     }

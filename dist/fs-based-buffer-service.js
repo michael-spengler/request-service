@@ -4,12 +4,13 @@ const fs = require("fs");
 const path = require("path");
 class FSBasedBufferService {
     async addToBuffer(bufferEntry) {
-        const bufferEntries = await this.read();
+        const bufferEntries = this.read();
         bufferEntries.push(bufferEntry);
         fs.writeFileSync(path.join(__dirname, "../buffer.json"), JSON.stringify(bufferEntries));
     }
-    async getBufferedResult(options) {
-        const bufferedEntriesForOptions = await this.read(options);
+    getBufferedResult(options) {
+        let bufferedEntriesForOptions = [];
+        bufferedEntriesForOptions = this.read(options);
         if (bufferedEntriesForOptions.length === 1) {
             return bufferedEntriesForOptions[0];
         }
@@ -20,7 +21,7 @@ class FSBasedBufferService {
         fs.writeFileSync(path.join(__dirname, "../buffer.json"), JSON.stringify([]));
     }
     async deleteBufferEntry(options) {
-        const bufferedResults = await this.read();
+        const bufferedResults = this.read();
         const entryToBeDeleted = bufferedResults.filter((entry) => JSON.stringify(entry.options) === JSON.stringify(options))[0];
         const indexOfEntryWhichShallBeDeleted = bufferedResults.indexOf(entryToBeDeleted);
         if (indexOfEntryWhichShallBeDeleted === -1) {
@@ -34,10 +35,9 @@ class FSBasedBufferService {
         return this.read();
     }
     // tslint:disable-next-line:prefer-function-over-method
-    async read(options) {
+    read(options) {
         let fileBuffer;
         let allBufferEntries = [];
-        let requestedBufferEntries = [];
         try {
             fileBuffer = fs.readFileSync(path.join(__dirname, "../buffer.json"));
             allBufferEntries = JSON.parse(fileBuffer.toString());
@@ -45,10 +45,10 @@ class FSBasedBufferService {
         catch (error) {
             // buffer file may not exist yet - no problem
         }
-        requestedBufferEntries = (options === undefined) ?
-            allBufferEntries :
-            allBufferEntries.filter((entry) => JSON.stringify(entry.options) === JSON.stringify(options));
-        return requestedBufferEntries;
+        if (options === undefined) {
+            return allBufferEntries;
+        }
+        return allBufferEntries.filter((entry) => JSON.stringify(entry.options) === JSON.stringify(options));
     }
 }
 exports.FSBasedBufferService = FSBasedBufferService;

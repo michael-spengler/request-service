@@ -1,6 +1,6 @@
 {
   "name": "request-service",
-  "version": "0.5.0",
+  "version": "0.6.0",
   "description": "As simple as it gets",
   "main": "./dist/index.js",
   "typings": "./dist/index.js",
@@ -17,7 +17,8 @@
   "keywords": [
     "Request With Buffer",
     "Request Service With Buffer",
-    "Buffered Request"
+    "Buffered Request",
+    "Request Service"
   ],
   "author": "Michael Spengler",
   "license": "MIT",

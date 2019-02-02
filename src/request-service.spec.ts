@@ -1,7 +1,6 @@
-import { FSBasedBufferService } from "./fs-based-buffer-service"
 import { RequestService } from "./request-service"
 import { StandardBufferService } from "./standard-buffer-service"
-import { IBufferEntry, IBufferService } from "./types"
+import { IBufferEntry } from "./types"
 
 jest.mock("request")
 
@@ -25,7 +24,7 @@ describe("RequestService using the StandardBuffer as an example for an IBufferSe
 
     it("performs two subsequent requests - replacing outdated data in buffer", async () => {
         const requestService: RequestService =
-            RequestService.getInstance([standardBufferService])
+            RequestService.getInstance(standardBufferService)
 
         const firstCallsResult: IBufferEntry =
             await requestService.get(optionsISS, bufferIntervalInMilliSeconds)
@@ -50,7 +49,7 @@ describe("RequestService using the StandardBuffer as an example for an IBufferSe
     })
 
     it("performs two subsequent requests - delivering buffered data from buffer", async () => {
-        const requestService: RequestService = RequestService.getInstance([standardBufferService])
+        const requestService: RequestService = RequestService.getInstance(standardBufferService)
 
         const firstCallsResult: IBufferEntry = await requestService.get(optionsISS, bufferIntervalInMilliSeconds)
         expect(firstCallsResult.data)

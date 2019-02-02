@@ -18,7 +18,7 @@ describe("RequestService using the StandardBuffer as an example for an IBufferSe
             .deleteBuffer();
     });
     it("performs two subsequent requests - replacing outdated data in buffer", async () => {
-        const requestService = request_service_1.RequestService.getInstance([standardBufferService]);
+        const requestService = request_service_1.RequestService.getInstance(standardBufferService);
         const firstCallsResult = await requestService.get(optionsISS, bufferIntervalInMilliSeconds);
         expect(firstCallsResult.data)
             .toEqual({ someContent: "hello world" });
@@ -32,7 +32,7 @@ describe("RequestService using the StandardBuffer as an example for an IBufferSe
             .toBeFalsy();
     });
     it("performs two subsequent requests - delivering buffered data from buffer", async () => {
-        const requestService = request_service_1.RequestService.getInstance([standardBufferService]);
+        const requestService = request_service_1.RequestService.getInstance(standardBufferService);
         const firstCallsResult = await requestService.get(optionsISS, bufferIntervalInMilliSeconds);
         expect(firstCallsResult.data)
             .toEqual({ someContent: "hello world" });

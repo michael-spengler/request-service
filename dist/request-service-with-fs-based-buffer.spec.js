@@ -18,7 +18,7 @@ describe("RequestService using the FSBasedBuffer as an example for an IBufferSer
             .deleteBuffer();
     });
     it("performs two subsequent requests - delivering buffered data from buffer", async () => {
-        const requestService = request_service_1.RequestService.getInstance([fSBasedBufferService]);
+        const requestService = request_service_1.RequestService.getInstance(fSBasedBufferService);
         const firstCallsResult = await requestService.get(optionsISS, bufferIntervalInMilliSeconds);
         expect(firstCallsResult.data)
             .toEqual({ someContent: "hello world" });
@@ -35,7 +35,7 @@ describe("RequestService using the FSBasedBuffer as an example for an IBufferSer
             .toEqual(secondCallsResult.lastRequestDate);
     });
     it("performs two subsequent requests - replacing outdated data in buffer", async () => {
-        const requestService = request_service_1.RequestService.getInstance([fSBasedBufferService]);
+        const requestService = request_service_1.RequestService.getInstance(fSBasedBufferService);
         const firstCallsResult = await requestService.get(optionsISS, bufferIntervalInMilliSeconds);
         expect(firstCallsResult.data)
             .toEqual({ someContent: "hello world" });
@@ -45,9 +45,9 @@ describe("RequestService using the FSBasedBuffer as an example for an IBufferSer
             .toHaveBeenCalledTimes(1);
         const aShortMomentInTime = 0.0001;
         const secondCallsResult = await requestService.get(optionsISS, aShortMomentInTime);
-        //     expect(fSBasedBufferService.deleteBufferEntry)
-        //         .toHaveBeenCalledTimes(1)
-        //     expect(firstCallsResult === secondCallsResult)
-        //         .toBeFalsy()
+        expect(fSBasedBufferService.deleteBufferEntry)
+            .toHaveBeenCalledTimes(1);
+        expect(firstCallsResult === secondCallsResult)
+            .toBeFalsy();
     });
 });

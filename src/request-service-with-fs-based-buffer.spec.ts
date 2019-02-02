@@ -24,7 +24,7 @@ describe("RequestService using the FSBasedBuffer as an example for an IBufferSer
     })
 
     it("performs two subsequent requests - delivering buffered data from buffer", async () => {
-        const requestService: RequestService = RequestService.getInstance([fSBasedBufferService])
+        const requestService: RequestService = RequestService.getInstance(fSBasedBufferService)
 
         const firstCallsResult: IBufferEntry = await requestService.get(optionsISS, bufferIntervalInMilliSeconds)
         expect(firstCallsResult.data)
@@ -50,7 +50,7 @@ describe("RequestService using the FSBasedBuffer as an example for an IBufferSer
 
     it("performs two subsequent requests - replacing outdated data in buffer", async () => {
         const requestService: RequestService =
-            RequestService.getInstance([fSBasedBufferService])
+            RequestService.getInstance(fSBasedBufferService)
 
         const firstCallsResult: IBufferEntry =
             await requestService.get(optionsISS, bufferIntervalInMilliSeconds)
@@ -69,11 +69,11 @@ describe("RequestService using the FSBasedBuffer as an example for an IBufferSer
         const secondCallsResult: IBufferEntry =
             await requestService.get(optionsISS, aShortMomentInTime)
 
-        //     expect(fSBasedBufferService.deleteBufferEntry)
-        //         .toHaveBeenCalledTimes(1)
+        expect(fSBasedBufferService.deleteBufferEntry)
+            .toHaveBeenCalledTimes(1)
 
-        //     expect(firstCallsResult === secondCallsResult)
-        //         .toBeFalsy()
+        expect(firstCallsResult === secondCallsResult)
+            .toBeFalsy()
 
     })
 

@@ -6,15 +6,17 @@ import { IBufferEntry, IBufferService } from "./types"
 export class FSBasedBufferService implements IBufferService {
 
     public async addToBuffer(bufferEntry: IBufferEntry): Promise<void> {
-        const bufferEntries: IBufferEntry[] = await this.read()
+        const bufferEntries: IBufferEntry[] = this.read()
         bufferEntries.push(bufferEntry)
         fs.writeFileSync(path.join(__dirname, "../buffer.json"), JSON.stringify(bufferEntries))
     }
 
-    public async getBufferedResult(options: any): Promise<IBufferEntry | undefined> {
+    public getBufferedResult(options: any): IBufferEntry | undefined {
 
-        const bufferedEntriesForOptions: IBufferEntry[] =
-            await this.read(options)
+        let bufferedEntriesForOptions: IBufferEntry[] = []
+
+        bufferedEntriesForOptions = this.read(options)
+
         if (bufferedEntriesForOptions.length === 1) {
             return bufferedEntriesForOptions[0]
         }
@@ -29,7 +31,7 @@ export class FSBasedBufferService implements IBufferService {
 
     public async deleteBufferEntry(options: any): Promise<void> {
 
-        const bufferedResults: IBufferEntry[] = await this.read()
+        const bufferedResults: IBufferEntry[] = this.read()
 
         const entryToBeDeleted: IBufferEntry = bufferedResults.filter((entry: IBufferEntry) =>
             JSON.stringify(entry.options) === JSON.stringify(options))[0]
@@ -49,10 +51,9 @@ export class FSBasedBufferService implements IBufferService {
     }
 
     // tslint:disable-next-line:prefer-function-over-method
-    public async read(options?: any): Promise<IBufferEntry[]> {
+    public read(options?: any): IBufferEntry[] {
         let fileBuffer: any
         let allBufferEntries: IBufferEntry[] = []
-        let requestedBufferEntries: IBufferEntry[] = []
 
         try {
             fileBuffer = fs.readFileSync(path.join(__dirname, "../buffer.json"))
@@ -62,11 +63,15 @@ export class FSBasedBufferService implements IBufferService {
         } catch (error) {
             // buffer file may not exist yet - no problem
         }
-        requestedBufferEntries = (options === undefined) ?
-            allBufferEntries :
-            allBufferEntries.filter((entry: IBufferEntry) => JSON.stringify(entry.options) === JSON.stringify(options))
 
-        return requestedBufferEntries
+        if (options === undefined) {
+            return allBufferEntries
+        }
+
+        return allBufferEntries.filter((entry: IBufferEntry) =>
+            JSON.stringify(entry.options) === JSON.stringify(options),
+        )
+
     }
 
     // public async saveBufferEntry(bufferEntry: IBufferEntry): Promise<void> {
