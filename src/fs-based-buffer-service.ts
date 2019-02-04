@@ -5,10 +5,18 @@ import { IBufferEntry, IBufferService } from "./types"
 
 export class FSBasedBufferService implements IBufferService {
 
+    private readonly bufferFilePath: string
+
+    public constructor(bufferFilePath?: string) {
+        this.bufferFilePath = (bufferFilePath === undefined) ?
+            path.join(__dirname, "../buffer.json") :
+            bufferFilePath
+    }
+
     public async addToBuffer(bufferEntry: IBufferEntry): Promise<void> {
         const bufferEntries: IBufferEntry[] = this.read()
         bufferEntries.push(bufferEntry)
-        fs.writeFileSync(path.join(__dirname, "../buffer.json"), JSON.stringify(bufferEntries))
+        fs.writeFileSync(this.bufferFilePath, JSON.stringify(bufferEntries))
     }
 
     public getBufferedResult(options: any): IBufferEntry | undefined {

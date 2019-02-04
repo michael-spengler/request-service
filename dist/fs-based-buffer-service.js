@@ -3,10 +3,15 @@ Object.defineProperty(exports, "__esModule", { value: true });
 const fs = require("fs");
 const path = require("path");
 class FSBasedBufferService {
+    constructor(bufferFilePath) {
+        this.bufferFilePath = (bufferFilePath === undefined) ?
+            path.join(__dirname, "../buffer.json") :
+            bufferFilePath;
+    }
     async addToBuffer(bufferEntry) {
         const bufferEntries = this.read();
         bufferEntries.push(bufferEntry);
-        fs.writeFileSync(path.join(__dirname, "../buffer.json"), JSON.stringify(bufferEntries));
+        fs.writeFileSync(this.bufferFilePath, JSON.stringify(bufferEntries));
     }
     getBufferedResult(options) {
         let bufferedEntriesForOptions = [];

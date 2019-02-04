@@ -1,1 +1,1 @@
-[]
+[{"data":{"someContent":"hello world"},"lastRequestDate":"2019-02-04T09:57:38.063Z","options":{"url":"http://api.open-notify.org/iss-now.json"}},{"data":{"someContent":"hello world"},"lastRequestDate":"2019-02-04T09:57:38.065Z","options":{"url":"http://api.open-notify.org/iss-now.json"}}]
